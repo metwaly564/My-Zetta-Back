@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  role      UserRole @default(ADMIN)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum UserRole {
+  ADMIN
+  SALES
+}
+
+model Service {
+  id                Int              @id @default(autoincrement())
+  nameEn            String
+  nameAr            String
+  shortName         String
+  descriptionEn     String
+  descriptionAr     String
+  icon              String
+  taglineEn         String
+  taglineAr         String
+  savingsMultiplier Float
+  monthlyRate       Float
+  features          ServiceFeature[]
+  benefits          ServiceBenefit[]
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  leads             Lead[]
+}
+
+model ServiceFeature {
+  id        Int      @id @default(autoincrement())
+  textEn    String
+  textAr    String
+  serviceId Int
+  service   Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+}
+
+model ServiceBenefit {
+  id        Int      @id @default(autoincrement())
+  textEn    String
+  textAr    String
+  icon      String
+  serviceId Int
+  service   Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+}
+
+model Partner {
+  id         Int      @id @default(autoincrement())
+  name       String
+  logoUrl    String
+  websiteUrl String?
+  rank       Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Lead {
+  id                 Int        @id @default(autoincrement())
+  name               String
+  company            String
+  email              String
+  phone              String
+  jobTitle           String?
+  industry           String?
+  serviceId          Int?
+  service            Service?   @relation(fields: [serviceId], references: [id])
+  deviceItems        Json? // Array of device items
+  calculationResults Json? // ROI results
+  type               LeadType   @default(CONTACT)
+  status             LeadStatus @default(NEW)
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+}
+
+enum LeadType {
+  CONTACT
+  ROI
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  CLOSED
+}
+
+model ComparisonLog {
+  id         Int      @id @default(autoincrement())
+  type       String // manual or file
+  inputData  Json
+  fileUrl    String?
+  resultData Json
+  createdAt  DateTime @default(now())
+}
