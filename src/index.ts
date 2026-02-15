@@ -5,6 +5,7 @@ import servicesRouter from './routes/services';
 import partnersRouter from './routes/partners';
 import leadsRouter from './routes/leads';
 import compareRouter from './routes/compare';
+import authRouter from './routes/auth';
 import errorhandler from './middlewares/errorMiddleware';
 
 dotenv.config();
@@ -23,6 +24,7 @@ app.use('/api/services', servicesRouter);
 app.use('/api/partners', partnersRouter);
 app.use('/api/leads', leadsRouter);
 app.use('/api/compare', compareRouter);
+app.use('/api/auth', authRouter);
 
 // Error handling middleware
 app.use(errorhandler);
