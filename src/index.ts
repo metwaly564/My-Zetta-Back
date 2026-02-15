@@ -29,6 +29,19 @@ app.use('/api/auth', authRouter);
 // Error handling middleware
 app.use(errorhandler);
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
     console.log(`Zetta Backend is running on http://localhost:${PORT}`);
+
+    // Diagnostic check
+    if (!process.env.DATABASE_URL) {
+        console.error('CRITICAL: DATABASE_URL is not defined in environment variables.');
+    } else {
+        try {
+            const prisma = (await import('./DB/connection')).default;
+            await prisma.$connect();
+            console.log('✅ Database connected successfully.');
+        } catch (error) {
+            console.error('❌ Database connection failed:', (error as Error).message);
+        }
+    }
 });
