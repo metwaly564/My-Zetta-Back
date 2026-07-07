@@ -8,6 +8,8 @@ import partnersRouter from './routes/partners';
 import leadsRouter from './routes/leads';
 import compareRouter from './routes/compare';
 import authRouter from './routes/auth';
+import contractsRouter from './routes/contracts';
+import devicesRouter from './routes/devices';
 import errorhandler from './middlewares/errorMiddleware';
 
 const app: Express = express();
@@ -25,6 +27,8 @@ app.use('/api/partners', partnersRouter);
 app.use('/api/leads', leadsRouter);
 app.use('/api/compare', compareRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/contracts', contractsRouter);
+app.use('/api/devices', devicesRouter);
 
 // Error handling middleware
 app.use(errorhandler);

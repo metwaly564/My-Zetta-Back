@@ -1,8 +1,12 @@
 import { Router, Request, Response } from "express";
 import { ComparisonRepository } from "../Reposatories/ComparisonRepository";
+import multer from "multer";
 
 const router = Router();
 const comparisonRepo = new ComparisonRepository();
+
+// Configure multer for basic file uploads
+const upload = multer({ dest: 'uploads/' });
 
 router.get("/", async (req: Request, res: Response) => {
     try {
@@ -13,9 +17,15 @@ router.get("/", async (req: Request, res: Response) => {
     }
 });
 
-router.post("/", async (req: Request, res: Response) => {
+router.post("/", upload.single('file'), async (req: Request, res: Response) => {
     try {
-        const { type, data } = req.body;
+        let { type, data } = req.body;
+
+        // If a file was uploaded, set the type and use file metadata as data
+        if (req.file) {
+            type = type || 'file_upload';
+            data = { filename: req.file.filename, originalName: req.file.originalname };
+        }
 
         // In a real scenario, this would involve complex logic or file processing
         // For now, we'll log the input and mock a result if it's manual

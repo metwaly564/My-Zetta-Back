@@ -8,18 +8,22 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
+  id        Int        @id @default(autoincrement())
+  email     String     @unique
   password  String
   name      String
-  role      UserRole @default(ADMIN)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  role      UserRole   @default(ADMIN)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  auditLogs AuditLog[]
+  contracts Contract[]
 }
 
 enum UserRole {
   ADMIN
   SALES
+  B2B_CLIENT
+  TECH
 }
 
 model Service {
@@ -105,4 +109,87 @@ model ComparisonLog {
   fileUrl    String?
   resultData Json
   createdAt  DateTime @default(now())
+}
+
+model Device {
+  id           Int           @id @default(autoincrement())
+  name         String
+  serialNumber String        @unique
+  status       DeviceStatus  @default(AVAILABLE)
+  contractId   Int?
+  contract     Contract?     @relation(fields: [contractId], references: [id])
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+enum DeviceStatus {
+  AVAILABLE
+  RENTED
+  MAINTENANCE
+  RETIRED
+}
+
+model Contract {
+  id             Int            @id @default(autoincrement())
+  userId         Int
+  user           User           @relation(fields: [userId], references: [id])
+  status         ContractStatus @default(DRAFT)
+  startDate      DateTime?
+  endDate        DateTime?
+  autoRenew      Boolean        @default(false)
+  signatureState SignatureState @default(PENDING)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  devices        Device[]
+  invoices       Invoice[]
+  extraServices  ExtraService[]
+}
+
+enum ContractStatus {
+  DRAFT
+  ACTIVE
+  EXPIRED
+  TERMINATED
+}
+
+enum SignatureState {
+  PENDING
+  SIGNED_OTP
+  SIGNED_NAFATH
+}
+
+model ExtraService {
+  id         Int      @id @default(autoincrement())
+  name       String
+  cost       Float
+  contractId Int
+  contract   Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+}
+
+model Invoice {
+  id         Int           @id @default(autoincrement())
+  amount     Float
+  status     InvoiceStatus @default(UNPAID)
+  dueDate    DateTime
+  contractId Int
+  contract   Contract      @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+}
+
+enum InvoiceStatus {
+  UNPAID
+  PAID
+  OVERDUE
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  action    String
+  entity    String
+  entityId  Int
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  details   Json?
+  createdAt DateTime @default(now())
 }

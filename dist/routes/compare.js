@@ -1,9 +1,15 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const ComparisonRepository_1 = require("../Reposatories/ComparisonRepository");
+const multer_1 = __importDefault(require("multer"));
 const router = (0, express_1.Router)();
 const comparisonRepo = new ComparisonRepository_1.ComparisonRepository();
+// Configure multer for basic file uploads
+const upload = (0, multer_1.default)({ dest: 'uploads/' });
 router.get("/", async (req, res) => {
     try {
         const logs = await comparisonRepo.findAll();
@@ -13,9 +19,14 @@ router.get("/", async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
-router.post("/", async (req, res) => {
+router.post("/", upload.single('file'), async (req, res) => {
     try {
-        const { type, data } = req.body;
+        let { type, data } = req.body;
+        // If a file was uploaded, set the type and use file metadata as data
+        if (req.file) {
+            type = type || 'file_upload';
+            data = { filename: req.file.filename, originalName: req.file.originalname };
+        }
         // In a real scenario, this would involve complex logic or file processing
         // For now, we'll log the input and mock a result if it's manual
         let resultData = {};
