@@ -10,6 +10,7 @@ import compareRouter from './routes/compare';
 import authRouter from './routes/auth';
 import contractsRouter from './routes/contracts';
 import devicesRouter from './routes/devices';
+import zettaPortalRoutes from './routes/zetta_portal';
 import errorhandler from './middlewares/errorMiddleware';
 
 const app: Express = express();
@@ -29,6 +30,7 @@ app.use('/api/compare', compareRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/contracts', contractsRouter);
 app.use('/api/devices', devicesRouter);
+app.use('/api/portal', zettaPortalRoutes);
 
 // Error handling middleware
 app.use(errorhandler);

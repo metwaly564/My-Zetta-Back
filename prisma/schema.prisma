@@ -193,3 +193,88 @@ model AuditLog {
   details   Json?
   createdAt DateTime @default(now())
 }
+
+model Client {
+  id         Int      @id @default(autoincrement())
+  name       String
+  slug       String   @unique
+  department String?
+  email      String?
+  phone      String?
+  address    String?
+  logoUrl    String?
+  notes      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  sites      Site[]
+}
+
+model Site {
+  id         Int      @id @default(autoincrement())
+  name       String
+  clientId   Int
+  client     Client   @relation(fields: [clientId], references: [id])
+  clientCode String
+  city       String
+  address    String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  assets     Asset[]
+}
+
+model Warehouse {
+  id          Int      @id @default(autoincrement())
+  name        String
+  city        String
+  address     String
+  managerName String?
+  phone       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  assets      Asset[]
+}
+
+model AssetCategory {
+  id           Int      @id @default(autoincrement())
+  name         String   @unique
+  categoryCode String   @default("GEN")
+  createdAt    DateTime @default(now())
+}
+
+model Asset {
+  id                 Int            @id @default(autoincrement())
+  assetTag           String         @unique
+  serialNumber       String         @unique
+  category           String
+  model              String
+  vendor             String
+  status             String         @default("In Warehouse")
+  warehouseId        Int?
+  warehouse          Warehouse?     @relation(fields: [warehouseId], references: [id])
+  assignedUser       String?
+  assignedDepartment String?
+  assignedLocation   String?
+  warrantyExpiry     String?
+  leaseStart         String?
+  leaseEnd           String?
+  monthlyRate        Float?
+  notes              String?
+  contractId         Int?
+  siteId             Int?
+  site               Site?          @relation(fields: [siteId], references: [id])
+  receivingRecordId  Int?
+  releasePOId        Int?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  history            AssetHistory[]
+}
+
+model AssetHistory {
+  id          Int      @id @default(autoincrement())
+  assetId     Int
+  asset       Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  eventType   String
+  description String
+  performedBy String?
+  createdAt   DateTime @default(now())
+}
