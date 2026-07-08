@@ -11,6 +11,7 @@ import authRouter from './routes/auth';
 import contractsRouter from './routes/contracts';
 import devicesRouter from './routes/devices';
 import zettaPortalRoutes from './routes/zetta_portal';
+import quotesRouter from './routes/quotes';
 import errorhandler from './middlewares/errorMiddleware';
 
 const app: Express = express();
@@ -31,6 +32,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/contracts', contractsRouter);
 app.use('/api/devices', devicesRouter);
 app.use('/api/portal', zettaPortalRoutes);
+app.use('/api/quotes', quotesRouter);
 
 // Error handling middleware
 app.use(errorhandler);
